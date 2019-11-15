@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace ConsoleApp2
+namespace PackageUpdater
 {
     class Program
     {
@@ -13,8 +13,8 @@ namespace ConsoleApp2
             var solutionDir = Directory.GetCurrentDirectory();
 
 #if DEBUG
-            var solution = @"C:\Users\Raix\Documents\insysgo-sdk-mobile\src";
-            var nuget = "ipott.sdk";
+            var solution = @"C:\Bitbucket\insysgo-sdk-mobile-clone\src";
+            var nuget = "insys.sdk";
             var version = "5.4.334";
 #else
             var solution = Directory.GetCurrentDirectory();
@@ -27,7 +27,7 @@ namespace ConsoleApp2
             Console.ReadKey();
         }
 
-        private static (string, string) GetArgument()
+        private static (string, string) GetArguments()
         {
             Console.WriteLine("Type package name and version e.g. insys.sdk 5.7.11");
             try
@@ -39,7 +39,7 @@ namespace ConsoleApp2
             catch (Exception ex)
             {
                 Console.WriteLine("Wrong input format");
-                return GetArgument();
+                return GetArguments();
             }
         }
 
@@ -70,6 +70,7 @@ namespace ConsoleApp2
             var packageReferences = itemGroups.Elements().Where(e => e.Name.LocalName == "PackageReference");
             var nugets = packageReferences.Where(p => p.Attributes().Any(a => a.Value.ToLower().Contains(nugetPackage)));
             var updatedAnyNugets = false;
+
             foreach (var nuget in nugets)
             {
                 updatedAnyNugets = true;
