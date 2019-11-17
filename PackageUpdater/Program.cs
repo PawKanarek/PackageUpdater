@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -8,7 +10,7 @@ namespace PackageUpdater
 {
     class Program
     {
-        private const string name = "PATH";
+        private const string pathVarName = "PATH";
 
         static void Main(string[] args)
         {
@@ -39,7 +41,7 @@ namespace PackageUpdater
                 }
                 else if (input.Length == 1 && input[0] == 'n')
                 {
-                    Console.WriteLine("Hello darkness my old firend");
+                    Console.WriteLine("Terminating...");
                     Environment.Exit(0);
                 }
                 else
@@ -47,20 +49,38 @@ namespace PackageUpdater
                     throw new Exception();
                 }
             }
+            catch (SecurityException ex)
+            {
+                Console.WriteLine($"Couln't complete request because: {ex.Message} Try open application with administrator privileges. Terminating...");
+                Console.ReadLine();
+            }
             catch (Exception)
             {
-                Console.WriteLine("What the hell? Try use 'y' or 'n'");
+                Console.WriteLine($"Couln't complete request. Try type 'y' or 'n'");
                 UpdatePathVariable();
             }
         }
 
         private static void AddNewPath()
         {
-            string pathvar = Environment.GetEnvironmentVariable(name);
-            Console.WriteLine($"Current path variables:\n{string.Join("\n", pathvar.Split(";"))}\n");
-            var value = pathvar + $@";{Directory.GetCurrentDirectory()}";
-            var target = EnvironmentVariableTarget.Machine;
-            Environment.SetEnvironmentVariable(name, value, target);
+            var currentDir = Directory.GetCurrentDirectory();
+            var pathvar = Environment.GetEnvironmentVariable(pathVarName, EnvironmentVariableTarget.Machine);
+            var variables = pathvar.Split(";");
+
+            Console.WriteLine($"Current path variables:\n{string.Join("\n", variables.Where(v=>!string.IsNullOrWhiteSpace(v)))}\n");
+        
+            if (variables.Any(v => v == currentDir))
+            {
+                Console.WriteLine($"Variable {currentDir} is already added. Terminating...");
+            }
+            else
+            {
+                var value = pathvar + $@";{currentDir}";
+                var target = EnvironmentVariableTarget.Machine; 
+                Environment.SetEnvironmentVariable(pathVarName, value, target);
+                Console.WriteLine($"Added {currentDir} to PATH. Terminating...");
+            }
+            Console.ReadLine();
         }
 
         private static (string, string) GetArguments()
@@ -93,7 +113,8 @@ namespace PackageUpdater
             }
             else
             {
-                Console.WriteLine($"Could not found any .csproj files inside: {solutionPath}");
+                Console.WriteLine($"Could not found any .csproj files inside: {solutionPath}. Terminating...");
+                Console.ReadLine();
             }
         }
 
@@ -132,10 +153,6 @@ namespace PackageUpdater
                 settings.Indent = true;
                 using var xmlWriter = XmlWriter.Create(filePath, settings);
                 document.Save(xmlWriter);
-            }
-            else
-            {
-                Console.WriteLine($"Could not found '{nugetPackage}' in {csprojname}");
             }
         }
     }
