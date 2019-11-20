@@ -141,14 +141,13 @@ namespace PackageUpdater
             var nuget = args.Length > 1 ? args[1] : string.Empty;
             var version = args.Length > 2 ? args[2] : string.Empty;
 
-            if (string.IsNullOrWhiteSpace(nuget) || string.IsNullOrWhiteSpace(version))
-            {
-                Console.WriteLine($"{string.Join(" ", args)} is not valid input parameter.");
-                return;
-            }
-
             try
             {
+                if (string.IsNullOrWhiteSpace(nuget) || string.IsNullOrWhiteSpace(version))
+                {
+                    throw new ArgumentException($"{string.Join(" ", args)} is not valid input parameter.");
+                }
+
                 var solutionDir = new DirectoryInfo(solutionPath);
                 IEnumerable<FileInfo> allSolutionfiles = solutionDir.GetDirectories().SelectMany(d => d.GetFiles());
                 IEnumerable<FileInfo> allCsprojs = allSolutionfiles.Where(f => f.Name.Contains(".csproj"));
