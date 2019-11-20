@@ -1,23 +1,25 @@
 PACKAGEUPDATER
 ==============
 
-Updates the nuget package in the .csproj files in the solution directory.
+Updates nugets packages version in the .csproj files in the solution directory.
+
+
 
 Install
 -------
 0. Download [latest release.](https://github.com/PawKanarek/PackageUpdater/releases)
 1. Unpack the .zip that contains PackageUpdater.exe
 2. Manually add folder that contains PackageUpdater.exe to the PATH Environment Variable
-
 or
-
 2. Execute this in comand line tool. 
 ```sh
 > packageupdater -p //Adds containing folder to PATH automatically.  
 ```
 
+
 Usage
 -----
+Execute packageupdater.exe in command line tool
 ```sh
 packageupdater [options]
 ```
