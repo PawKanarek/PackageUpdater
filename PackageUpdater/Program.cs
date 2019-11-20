@@ -15,8 +15,10 @@ namespace PackageUpdater
         {
             new Input("-h", null, "Displays this help", _ => DisplayHelp()),
             new Input("-p", null, "Add Current location to environment variable PATH", _ => UpdatePathVariable()),
-            new Input("-u", "[package_name] [new_version]", "Updates nuget packages to given version in current folder. e.g. '-u Xamarin.Forms 4.3.0.991211'.",
-                (string [] args) => UpdateSolution(args))
+            new Input("-u", "[package_name] [new_version]", "Updates versions of nuget packages in current folder. e.g. '-u Xamarin.Forms 4.3.0.991211'."
+                + " Where [packagename] is nuget package name reference (Program will use functions .ToLower() and .Contains([packagename])),"
+                + " [new_version] new version to replace current."
+                , (string [] args) => UpdateSolution(args))
         };
 
         private static void Main(string[] args)
@@ -46,7 +48,7 @@ namespace PackageUpdater
                 isFirstRun = false;
                 DisplayHelp();
             }
-            else if (input != null) 
+            else if (input != null)
             {
                 input.Action.Invoke(args);
             }
