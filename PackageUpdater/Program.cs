@@ -50,6 +50,10 @@ namespace PackageUpdater
             {
                 input.Action.Invoke(args);
             }
+            else
+            {
+                Console.WriteLine($"{string.Join(" ", args)} is not valid input parameter.");
+            }
         }
 
         private static void DisplayHelp()
@@ -88,11 +92,11 @@ namespace PackageUpdater
             }
             catch (SecurityException ex)
             {
-                Console.WriteLine($"Couln't update PATH environment because: {ex.Message} Try open application with administrator privileges.");
+                Console.WriteLine($"Could not update PATH environment because: {ex.Message} Try open application with administrator privileges.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Couln't complete request because: {ex.Message}");
+                Console.WriteLine($"Could not complete request because: {ex.Message}");
             }
         }
 
@@ -141,23 +145,39 @@ namespace PackageUpdater
                 return;
             }
 
-            var solutionDir = new DirectoryInfo(solutionPath);
-            IEnumerable<FileInfo> allSolutionfiles = solutionDir.GetDirectories().SelectMany(d => d.GetFiles());
-            IEnumerable<FileInfo> allCsprojs = allSolutionfiles.Where(f => f.Name.Contains(".csproj"));
-            if (allCsprojs.Any())
+            try
             {
-                foreach (FileInfo item in allCsprojs)
+                var solutionDir = new DirectoryInfo(solutionPath);
+                IEnumerable<FileInfo> allSolutionfiles = solutionDir.GetDirectories().SelectMany(d => d.GetFiles());
+                IEnumerable<FileInfo> allCsprojs = allSolutionfiles.Where(f => f.Name.Contains(".csproj"));
+                if (allCsprojs.Any())
                 {
-                    UpdateNuget(item.FullName, nuget, version);
+                    var updatedAnyNuget = false;
+                    foreach (FileInfo item in allCsprojs)
+                    {
+                        if (UpdateNuget(item.FullName, nuget, version))
+                        {
+                            updatedAnyNuget = true;
+                        }
+                    }
+
+                    if (!updatedAnyNuget)
+                    {
+                        throw new ArgumentException($"There is no package reference that contains {nuget} in {solutionPath}");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"There is no .csproj in {solutionPath}");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"Could not found any .csproj files inside: {solutionPath}");
+                Console.WriteLine($"Could not complete request because: {ex.Message}");
             }
         }
 
-        private static void UpdateNuget(string filePath, string nugetPackage, string newVersion)
+        private static bool UpdateNuget(string filePath, string nugetPackage, string newVersion)
         {
             var csprojname = filePath.Split("\\").LastOrDefault();
             var document = XDocument.Load(filePath);
@@ -193,6 +213,7 @@ namespace PackageUpdater
                 using var xmlWriter = XmlWriter.Create(filePath, settings);
                 document.Save(xmlWriter);
             }
+            return updatedAnyNugets;
         }
     }
 
