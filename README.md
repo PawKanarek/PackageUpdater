@@ -8,12 +8,12 @@ Install
 1. Unpack the .zip that contains PackageUpdater.exe
 2. Manually add folder that contains PackageUpdater.exe to the PATH Environment Variable or execute this in command line tool. 
 ```sh
-> packageupdater -p //Adds containing folder to PATH automatically.  
+> packageupdater -p // Adds current folder to PATH automatically.  
 ```
 
 Usage
 -----
-Execute packageupdater.exe in command line tool
+Execute PackageUpdater.exe in command line tool
 ```sh
 packageupdater [options]
 ```
