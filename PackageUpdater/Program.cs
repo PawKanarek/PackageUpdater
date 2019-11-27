@@ -184,7 +184,7 @@ namespace PackageUpdater
             var document = XDocument.Load(filePath);
             IEnumerable<XElement> itemGroups = document.Elements().Elements().Where(e => e.Name.LocalName == "ItemGroup");
             IEnumerable<XElement> packageReferences = itemGroups.Elements().Where(e => e.Name.LocalName == "PackageReference");
-            IEnumerable<XElement> nugets = packageReferences.Where(p => p.Attributes().Any(a => a.Value.ToLower().Contains(nugetPackage)));
+            IEnumerable<XElement> nugets = packageReferences.Where(p => p.Attributes().Any(a => a.Value.Contains(nugetPackage, StringComparison.OrdinalIgnoreCase)));
             var updatedAnyNugets = false;
 
             foreach (XElement nuget in nugets)
