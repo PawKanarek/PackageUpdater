@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -21,9 +22,12 @@ namespace PackageUpdater
                 , (string [] args) => UpdateSolution(args))
         };
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            ParseArguments(args);
+            //ParseArguments(args);
+            await ExeUpdater.UpdateIfAvailable();
+
+            Console.ReadLine();
         }
 
         private static void ParseArguments(string[] args)

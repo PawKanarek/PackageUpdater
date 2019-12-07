@@ -7,4 +7,9 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Octokit" Version="0.36.0" />
+  </ItemGroup>
+
+
 </Project>
