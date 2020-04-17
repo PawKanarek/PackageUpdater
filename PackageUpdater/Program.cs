@@ -16,9 +16,9 @@ namespace PackageUpdater
             new Input("-h", null, "Displays this help", _ => DisplayHelp()),
             new Input("-p", null, "Add Current location to environment variable PATH", _ => UpdatePathVariable()),
             new Input("-u", "[package_name] [new_version]", "Updates versions of nuget packages in current folder. e.g. '-u Xamarin.Forms 4.3.0.991211'."
-                + " Where [packagename] is nuget package name reference (Program will use functions .ToLower() and .Contains([packagename])),"
+                + " Where [packagename] is nuget package name reference (Program will use .Contains([packagename])),"
                 + " [new_version] new version to replace current."
-                , (string [] args) => UpdateSolution(args))
+                , (string[] args) => UpdateSolution(args))
         };
 
         private static void Main(string[] args)
@@ -42,7 +42,7 @@ namespace PackageUpdater
             }
 
             var firstArg = args.FirstOrDefault();
-            Input input = consoleInput?.FirstOrDefault(a => a.Parameter == firstArg);
+            var input = consoleInput?.FirstOrDefault(a => a.Parameter == firstArg);
             if (isFirstRun && firstArg == null)
             {
                 isFirstRun = false;
@@ -60,9 +60,9 @@ namespace PackageUpdater
 
         private static void DisplayHelp()
         {
-            Console.WriteLine($"Usage:\n PackageUpdater [options] [package_name] [new version]\n\nOptions:");
+            Console.WriteLine("Usage:\n PackageUpdater [options] [package_name] [new version]\n\nOptions:");
 
-            foreach (Input action in consoleInput)
+            foreach (var action in consoleInput)
             {
                 Console.WriteLine(" " + string.Join(" ", new List<string> { action.Parameter, action.OptionalParameter, "->", action.Description }.Where(s => !string.IsNullOrWhiteSpace(s))));
             }
@@ -149,12 +149,12 @@ namespace PackageUpdater
                 }
 
                 var solutionDir = new DirectoryInfo(solutionPath);
-                IEnumerable<FileInfo> allSolutionfiles = solutionDir.GetDirectories().SelectMany(d => d.GetFiles());
-                IEnumerable<FileInfo> allCsprojs = allSolutionfiles.Where(f => f.Name.Contains(".csproj"));
+                var allSolutionfiles = solutionDir.GetDirectories().SelectMany(d => d.GetFiles());
+                var allCsprojs = allSolutionfiles.Where(f => f.Name.Contains(".csproj"));
                 if (allCsprojs.Any())
                 {
                     var updatedAnyNuget = false;
-                    foreach (FileInfo item in allCsprojs)
+                    foreach (var item in allCsprojs)
                     {
                         if (UpdateNuget(item.FullName, nuget, version))
                         {
@@ -182,17 +182,18 @@ namespace PackageUpdater
         {
             var csprojname = filePath.Split("\\").LastOrDefault();
             var document = XDocument.Load(filePath);
-            IEnumerable<XElement> itemGroups = document.Elements().Elements().Where(e => e.Name.LocalName == "ItemGroup");
-            IEnumerable<XElement> packageReferences = itemGroups.Elements().Where(e => e.Name.LocalName == "PackageReference");
-            IEnumerable<XElement> nugets = packageReferences.Where(p => p.Attributes().Any(a => a.Value.Contains(nugetPackage, StringComparison.OrdinalIgnoreCase)));
+            var itemGroups = document.Elements().Elements().Where(e => e.Name.LocalName.Equals("ItemGroup", StringComparison.OrdinalIgnoreCase));
+            var packageReferences = itemGroups.Elements().Where(e => e.Name.LocalName.Equals("PackageReference", StringComparison.OrdinalIgnoreCase));
+            var nugets = packageReferences.Where(p => p.Attributes().Any(a => a.Value.Contains(nugetPackage, StringComparison.OrdinalIgnoreCase)));
             var updatedAnyNugets = false;
 
-            foreach (XElement nuget in nugets)
+            foreach (var nuget in nugets)
             {
                 updatedAnyNugets = true;
                 var oldVersion = string.Empty;
 
-                XAttribute versionAttribute = nuget.Attributes().FirstOrDefault(a => a.Name.LocalName == "Version"); // look for attribute in projects that targets .netstandard2.0
+                // look for attribute in projects that targets .netstandard2.0
+                var versionAttribute = nuget.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals("Version", StringComparison.OrdinalIgnoreCase));
                 if (versionAttribute != null)
                 {
                     oldVersion = versionAttribute.Value;
