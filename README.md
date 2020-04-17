@@ -2,6 +2,11 @@ PACKAGEUPDATER
 ==============
 Updates versions of nuget packages in *.csproj files in the solution directory.
 
+Publish
+-------
+dotnet publish -c Release -r osx-x64 -o release /p:PublishSingleFile=true /p:PublishTrimmed=true
+
+
 Install
 -------
 0. Download [latest release.](https://github.com/PawKanarek/PackageUpdater/releases)
