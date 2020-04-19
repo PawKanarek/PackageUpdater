@@ -7,10 +7,10 @@ namespace PackageUpdater
         private static readonly EnvironmentVariablesManager EnvironmentVariablesManager = new EnvironmentVariablesManager();
         private static readonly NugetUpdater NugetUpdater = new NugetUpdater();
 
-        private static readonly List<InputParameter> ConsoleParameters = new List<InputParameter>()
+        private static readonly List<ConsoleInputParameter> ConsoleParameters = new List<ConsoleInputParameter>()
         {
-            new InputParameter("-p", null, "Add Current location to environment variable PATH (Windows Only)", _ => EnvironmentVariablesManager.UpdatePathVariable()),
-            new InputParameter("-u", "[package_name] [new_version]", "Updates versions of nuget packages in current folder. e.g. '-u Xamarin.Forms 4.3.0.991211'."
+            new ConsoleInputParameter("-p", null, "Add Current location to environment variable PATH (Windows Only)", _ => EnvironmentVariablesManager.UpdatePathVariable()),
+            new ConsoleInputParameter("-u", "[package_name] [new_version]", "Updates versions of nuget packages in current folder. e.g. '-u Xamarin.Forms 4.3.0.991211'."
                 + " Where [packagename] is nuget package name reference (Program will use .Contains([packagename])),"
                 + " [new_version] new version to replace current."
                 , (string[] args) => NugetUpdater.UpdateSolution(args))

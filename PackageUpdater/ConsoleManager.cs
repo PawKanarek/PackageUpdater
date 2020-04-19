@@ -6,17 +6,21 @@ namespace PackageUpdater
 {
     public class ConsoleManager
     {
-        private readonly List<InputParameter> consoleParameters;
+        private readonly List<ConsoleInputParameter> consoleParameters;
 
         private bool isFirstRun = true;
 
-        public ConsoleManager(IEnumerable<InputParameter> inputParams)
+        public ConsoleManager(IList<ConsoleInputParameter> inputParams)
         {
-            this.consoleParameters = new List<InputParameter>(4)
+            this.consoleParameters = new List<ConsoleInputParameter>(4)
             {
-                new InputParameter("-h", null, "Displays this help", _ => this.DisplayHelp())
+                new ConsoleInputParameter("-h", null, "Displays this help", _ => this.DisplayHelp())
             };
-            this.consoleParameters.AddRange(inputParams);
+
+            if (inputParams?.Count > 0)
+            {
+                this.consoleParameters.AddRange(inputParams);
+            }
         }
 
         public void DisplayHelp()
@@ -33,15 +37,8 @@ namespace PackageUpdater
         {
             if (args == null)
             {
-                try
-                {
-                    args = Console.ReadLine().Split(" ");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Could not parse args. Reason: {ex.Message}");
-                    return;
-                }
+                this.DisplayHelp();
+                return;
             }
 
             var firstArg = args.FirstOrDefault();
