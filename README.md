@@ -6,8 +6,15 @@ Publish
 -------
 dotnet publish -c Release -r osx-x64 -o release /p:PublishSingleFile=true /p:PublishTrimmed=true
 
+Install mac
+-------
+type in terminal:
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/PawKanarek/PackageUpdater/macOS/installPackageUpdater.sh)"
+```
 
-Install
+
+Install windows
 -------
 0. Download [latest release.](https://github.com/PawKanarek/PackageUpdater/releases)
 1. Unpack the .zip that contains PackageUpdater.exe
