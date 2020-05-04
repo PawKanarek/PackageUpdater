@@ -9,5 +9,3 @@ rm PackageUpdater
 chmod +x /usr/local/bin/PackageUpdater
 
 PackageUpdater -h
-
-rm installPackageUpdater.sh
